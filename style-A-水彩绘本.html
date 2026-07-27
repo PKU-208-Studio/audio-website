@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Storyfield · Dreamy Storybook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FFF8F0; --ink:#5b5145; --dim:#9a8f80;
+    --blue:#A8C4D4; --pink:#F5C6C6; --sage:#B9C9A6; --lilac:#D4C2E8; --peach:#F3D5A7;
+    --serif:"Fraunces",Georgia,serif; --sans:"Nunito","PingFang SC",sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--sans);color:var(--ink);min-height:100vh;overflow-x:hidden;
+    background:
+      radial-gradient(60% 50% at 15% 12%,rgba(245,198,198,.55),transparent 60%),
+      radial-gradient(55% 45% at 88% 18%,rgba(168,196,212,.5),transparent 60%),
+      radial-gradient(60% 50% at 80% 88%,rgba(212,194,232,.45),transparent 60%),
+      radial-gradient(55% 50% at 10% 85%,rgba(185,201,166,.45),transparent 60%),
+      var(--cream);}
+  /* paper texture */
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;z-index:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+    mix-blend-mode:multiply;opacity:.06}
+  .wrap{position:relative;z-index:2}
+
+  header{display:flex;justify-content:space-between;align-items:center;padding:28px 46px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand .mark{width:38px;height:38px;border-radius:50% 50% 50% 12px;
+    background:linear-gradient(135deg,var(--pink),var(--lilac));box-shadow:0 8px 20px rgba(212,194,232,.6);
+    animation:bob 4s ease-in-out infinite}
+  @keyframes bob{50%{transform:translateY(-6px) rotate(-4deg)}}
+  .brand h1{font-family:var(--serif);font-weight:600;font-size:24px;letter-spacing:.5px}
+  nav{display:flex;gap:30px;align-items:center;font-size:15px}
+  nav a{color:var(--ink);text-decoration:none;opacity:.7;transition:.3s}
+  nav a:hover{opacity:1}
+  .btn{background:linear-gradient(135deg,var(--pink),var(--peach));border:none;color:#7a5c4b;
+    padding:10px 22px;border-radius:30px;font-family:var(--sans);font-weight:700;font-size:14px;cursor:pointer;
+    box-shadow:0 8px 18px rgba(243,213,167,.6);transition:.3s}
+  .btn:hover{transform:translateY(-2px)}
+  .lang{margin-left:6px;display:flex;gap:4px;font-size:13px}
+  .lang button{background:none;border:1px solid #e0d3c0;border-radius:20px;padding:5px 12px;color:var(--dim);cursor:pointer;font-family:inherit;transition:.3s}
+  .lang button.on{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+
+  .hero{text-align:center;padding:40px 24px 20px;position:relative}
+  .hero .kicker{font-family:var(--sans);letter-spacing:6px;font-size:12px;text-transform:uppercase;color:var(--dim)}
+  .hero h2{font-family:var(--serif);font-weight:600;font-size:64px;line-height:1.1;margin:18px 0 14px;letter-spacing:.5px}
+  .hero h2 em{font-style:italic;color:#c98b9a}
+  .hero p{font-size:17px;color:var(--dim);max-width:520px;margin:0 auto;line-height:1.7}
+  .clouds span{position:absolute;font-size:30px;opacity:.6;animation:float 9s ease-in-out infinite}
+  .clouds .c1{top:20px;left:12%}.clouds .c2{top:60px;right:14%;animation-delay:2s}
+  .clouds .c3{top:160px;left:22%;animation-delay:4s;font-size:22px}
+  .clouds .c4{top:120px;right:24%;animation-delay:1s;font-size:24px}
+  @keyframes float{50%{transform:translateY(-16px)}}
+
+  .genres{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:26px;
+    max-width:1080px;margin:50px auto 40px;padding:0 46px}
+  .card{position:relative;border-radius:26px;padding:30px 26px 26px;cursor:pointer;
+    background:rgba(255,255,255,.55);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.7);
+    box-shadow:0 14px 34px rgba(150,130,120,.14);transition:.4s;overflow:hidden}
+  .card::before{content:"";position:absolute;top:-40px;right:-40px;width:130px;height:130px;border-radius:50%;
+    background:var(--g);opacity:.5;filter:blur(6px);transition:.4s}
+  .card:hover{transform:translateY(-8px) rotate(-1deg)}
+  .card:hover::before{transform:scale(1.25)}
+  .blob{width:56px;height:56px;border-radius:46% 54% 58% 42%/52% 44% 56% 48%;background:var(--g);
+    box-shadow:0 8px 20px rgba(150,130,120,.25);margin-bottom:16px;animation:morph 8s ease-in-out infinite}
+  @keyframes morph{50%{border-radius:58% 42% 44% 56%/46% 58% 42% 54%}}
+  .card h3{font-family:var(--serif);font-weight:600;font-size:23px;margin-bottom:8px}
+  .card p{font-size:14px;color:var(--dim);line-height:1.6}
+  .card .count{margin-top:16px;font-size:12px;letter-spacing:1px;color:var(--ink);opacity:.55}
+  .card.pink{--g:var(--pink)}.card.blue{--g:var(--blue)}.card.lilac{--g:var(--lilac)}
+  .card.sage{--g:var(--sage)}.card.peach{--g:var(--peach)}
+
+  footer{text-align:center;padding:36px;color:var(--dim);font-size:13px;font-family:var(--serif);font-style:italic}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand"><span class="mark"></span><h1 data-i18n="brand">Storyfield</h1></div>
+  <nav>
+    <a href="#" data-i18n="nav1">Stories</a>
+    <a href="#" data-i18n="nav2">Genres</a>
+    <a href="#" data-i18n="nav3">Authors</a>
+    <button class="btn" data-i18n="cta">Start Reading</button>
+    <span class="lang"><button data-lang="en" class="on">EN</button><button data-lang="zh">中文</button></span>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="clouds"><span class="c1">☁️</span><span class="c2">✦</span><span class="c3">☁️</span><span class="c4">✦</span></div>
+  <div class="kicker" data-i18n="kicker">Once upon a quiet afternoon</div>
+  <h2 data-i18n="title">Where every story <em>blooms</em></h2>
+  <p data-i18n="subtitle">A soft little world of tales — pick a color, open a page, and let the daydream carry you away.</p>
+</section>
+
+<section class="genres" id="genres">
+  <div class="card pink"><div class="blob"></div><h3 data-k="n"></h3><p data-k="d"></p><div class="count" data-k="c"></div></div>
+  <div class="card blue"><div class="blob"></div><h3 data-k="n"></h3><p data-k="d"></p><div class="count" data-k="c"></div></div>
+  <div class="card lilac"><div class="blob"></div><h3 data-k="n"></h3><p data-k="d"></p><div class="count" data-k="c"></div></div>
+  <div class="card sage"><div class="blob"></div><h3 data-k="n"></h3><p data-k="d"></p><div class="count" data-k="c"></div></div>
+  <div class="card peach"><div class="blob"></div><h3 data-k="n"></h3><p data-k="d"></p><div class="count" data-k="c"></div></div>
+</section>
+
+<footer data-i18n="footer">Made with soft light &amp; slow mornings · Storyfield</footer>
+</div>
+
+<script>
+const I18N={
+  en:{brand:"Storyfield",nav1:"Stories",nav2:"Genres",nav3:"Authors",cta:"Start Reading",
+    kicker:"Once upon a quiet afternoon",
+    title:"Where every story <em>blooms</em>",
+    subtitle:"A soft little world of tales — pick a color, open a page, and let the daydream carry you away.",
+    footer:"Made with soft light & slow mornings · Storyfield",
+    genres:[
+      {n:"Romance",d:"First glances, love letters, and the ache of almost.",c:"128 STORIES"},
+      {n:"Fantasy",d:"Floating islands, sleepy dragons, and doors to elsewhere.",c:"94 STORIES"},
+      {n:"Dreamcore",d:"Half-remembered dreams and the logic of clouds.",c:"57 STORIES"},
+      {n:"Slice of Life",d:"Tea kettles, rainy windows, and small quiet joys.",c:"143 STORIES"},
+      {n:"Adventure",d:"Paper boats, far maps, and the courage to wander.",c:"76 STORIES"}
+    ]},
+  zh:{brand:"故事原野",nav1:"故事",nav2:"分类",nav3:"作者",cta:"开始阅读",
+    kicker:"在一个安静的午后",
+    title:"每个故事都在<em>轻轻绽放</em>",
+    subtitle:"一个柔软的故事小世界——挑一种颜色，翻开一页，让白日梦带你走远。",
+    footer:"用柔光与慢清晨酿成 · 故事原野",
+    genres:[
+      {n:"浪漫爱情",d:"初见的目光、情书，和「差一点」的心动。",c:"128 个故事"},
+      {n:"奇幻玄幻",d:"漂浮的岛屿、打盹的龙，和通往别处的门。",c:"94 个故事"},
+      {n:"梦境幻想",d:"半记得的梦，和云朵般的逻辑。",c:"57 个故事"},
+      {n:"日常治愈",d:"水壶、雨窗，和细小安静的欢喜。",c:"143 个故事"},
+      {n:"冒险旅程",d:"纸船、远方的地图，和出走的勇气。",c:"76 个故事"}
+    ]}
+};
+let LANG="en";
+const cards=[...document.querySelectorAll('.card')];
+function applyLang(l){
+  LANG=l;const t=I18N[l];
+  document.documentElement.lang=l==="zh"?"zh":"en";
+  document.querySelectorAll('[data-i18n]').forEach(e=>{if(t[e.dataset.i18n]!=null)e.innerHTML=t[e.dataset.i18n]});
+  cards.forEach((c,i)=>{
+    c.querySelector('[data-k="n"]').textContent=t.genres[i].n;
+    c.querySelector('[data-k="d"]').textContent=t.genres[i].d;
+    c.querySelector('[data-k="c"]').textContent=t.genres[i].c;
+  });
+  document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.lang===l));
+}
+document.querySelectorAll('.lang button').forEach(b=>b.addEventListener('click',()=>applyLang(b.dataset.lang)));
+applyLang("en");
+</script>
+</body>
+</html>

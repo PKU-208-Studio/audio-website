@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>午夜电台 · V2 信号塔</title>
+<style>
+  :root{
+    --bg:#04050c;--panel:#0a0c18;--ink:#eaf0ff;--dim:#767ea6;
+    --red:#ff2e63;--cyan:#1fe0ff;--violet:#b45cff;--green:#2affab;
+    --c:var(--cyan);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden;
+    transition:background .8s}
+  body{background:radial-gradient(80% 70% at 28% 40%,color-mix(in srgb,var(--c) 14%,transparent),transparent 60%),var(--bg)}
+  .grain{position:fixed;inset:0;pointer-events:none;opacity:.045;z-index:99;
+    background-image:radial-gradient(#fff 1px,transparent 1px);background-size:3px 3px}
+  header{display:flex;justify-content:space-between;align-items:center;padding:24px 46px;position:relative;z-index:5}
+  .brand{display:flex;align-items:center;gap:12px;letter-spacing:4px;font-weight:700;font-size:17px}
+  .brand .mark{width:14px;height:14px;border-radius:50%;background:var(--c);box-shadow:0 0 18px var(--c);transition:.6s}
+  nav{display:flex;gap:28px;font-size:13px}
+  nav a{color:var(--dim);text-decoration:none;letter-spacing:2px;transition:.3s}
+  nav a:hover{color:var(--ink)}
+  .signin{border:1px solid #262c4d;padding:8px 18px;border-radius:30px;font-size:12px;color:var(--dim);letter-spacing:2px;cursor:pointer;transition:.3s}
+  .signin:hover{border-color:var(--c);color:var(--c);box-shadow:0 0 20px color-mix(in srgb,var(--c) 40%,transparent)}
+
+  .stage{display:grid;grid-template-columns:1.15fr .85fr;gap:20px;
+    max-width:1240px;margin:10px auto;padding:0 46px;align-items:center;min-height:74vh}
+
+  /* Tower / radar */
+  .tower{position:relative;height:560px;display:flex;align-items:center;justify-content:center}
+  .rings{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+  .ring{position:absolute;border-radius:50%;border:1px solid color-mix(in srgb,var(--c) 30%,transparent);
+    animation:emit 4s ease-out infinite}
+  @keyframes emit{0%{width:60px;height:60px;opacity:.9}100%{width:520px;height:520px;opacity:0}}
+  .core{position:relative;z-index:3;width:120px;height:120px;border-radius:50%;
+    background:radial-gradient(circle,#fff,var(--c) 45%,transparent 72%);
+    box-shadow:0 0 60px var(--c);animation:breathe 3s ease-in-out infinite}
+  @keyframes breathe{50%{transform:scale(1.12)}}
+  .core::after{content:"MHz";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    color:#04050c;font-weight:800;letter-spacing:2px;font-size:15px}
+  .beam{position:absolute;top:50%;left:50%;width:50%;height:2px;transform-origin:left center;
+    background:linear-gradient(90deg,var(--c),transparent);animation:sweep 5s linear infinite;opacity:.5}
+  @keyframes sweep{to{transform:rotate(360deg)}}
+  .tower .label{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);
+    font-family:"Courier New",monospace;font-size:12px;color:var(--dim);letter-spacing:3px}
+
+  /* Right column */
+  .right .kicker{font-size:12px;letter-spacing:7px;color:var(--c);text-shadow:0 0 12px var(--c)}
+  .right h1{font-size:42px;line-height:1.15;letter-spacing:3px;margin:14px 0 10px;font-weight:800}
+  .right .sub{color:var(--dim);font-size:13px;letter-spacing:2px;line-height:1.7;margin-bottom:22px}
+  .list{display:flex;flex-direction:column;gap:12px}
+  .band{display:flex;align-items:center;gap:16px;padding:14px 18px;border-radius:14px;cursor:pointer;
+    background:linear-gradient(90deg,var(--panel),#070812);border:1px solid #161a34;
+    position:relative;overflow:hidden;transition:.35s}
+  .band::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--bc);transition:.35s}
+  .band:hover,.band.on{border-color:var(--bc);transform:translateX(6px)}
+  .band:hover::before,.band.on::before{width:6px;box-shadow:0 0 18px var(--bc)}
+  .band .fq{font-family:"Courier New",monospace;font-size:13px;color:var(--bc);width:64px;letter-spacing:1px}
+  .band .txt{flex:1}
+  .band .txt b{font-size:16px;letter-spacing:2px;display:block}
+  .band .txt small{color:var(--dim);font-size:11px;letter-spacing:1px}
+  .band .mini{display:flex;gap:2px;align-items:flex-end;height:22px;width:52px}
+  .band .mini i{flex:1;background:var(--bc);border-radius:1px;animation:eq 1s ease-in-out infinite;box-shadow:0 0 6px var(--bc)}
+  @keyframes eq{0%,100%{height:15%}50%{height:100%}}
+  .band.red{--bc:var(--red)}.band.cyan{--bc:var(--cyan)}.band.violet{--bc:var(--violet)}.band.green{--bc:var(--green)}
+
+  footer{text-align:center;padding:20px;color:#2c3252;font-size:11px;letter-spacing:3px}
+  @media(max-width:900px){.stage{grid-template-columns:1fr}.tower{height:360px}}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<header>
+  <div class="brand"><span class="mark"></span>午夜电台 <span style="color:var(--dim);font-weight:400;font-size:12px;letter-spacing:3px">MIDNIGHT&nbsp;FM</span></div>
+  <nav><a href="#">直播</a><a href="#">频道</a><a href="#">节目单</a><a href="#">关于</a></nav>
+  <div class="signin">进入电台</div>
+</header>
+
+<section class="stage">
+  <div class="tower">
+    <div class="rings" id="rings">
+      <span class="ring" style="animation-delay:0s"></span>
+      <span class="ring" style="animation-delay:1s"></span>
+      <span class="ring" style="animation-delay:2s"></span>
+      <span class="ring" style="animation-delay:3s"></span>
+    </div>
+    <div class="beam"></div>
+    <div class="core" id="core"></div>
+    <div class="label" id="towerLabel">SIGNAL · 95.0 MHz · 科幻宇宙</div>
+  </div>
+
+  <div class="right">
+    <div class="kicker">D E E P &nbsp; N I G H T &nbsp; R A D I O</div>
+    <h1>调准一束<br>属于你的信号</h1>
+    <p class="sub">城市睡着了，电台醒着。<br>选择一个频段，让声音带你去别处。</p>
+    <div class="list" id="list">
+      <div class="band red on" data-mhz="89.4" data-c="--red" data-name="悬疑惊悚">
+        <div class="fq">89.4</div>
+        <div class="txt"><b>悬疑惊悚</b><small>密室 · 追凶 · 深夜来电</small></div>
+        <div class="mini"><i style="animation-delay:0s"></i><i style="animation-delay:.1s"></i><i style="animation-delay:.2s"></i><i style="animation-delay:.15s"></i><i style="animation-delay:.05s"></i><i style="animation-delay:.25s"></i></div>
+      </div>
+      <div class="band cyan" data-mhz="95.0" data-c="--cyan" data-name="科幻宇宙">
+        <div class="fq">95.0</div>
+        <div class="txt"><b>科幻宇宙</b><small>飞船 · AI · 星际回声</small></div>
+        <div class="mini"><i style="animation-delay:.2s"></i><i style="animation-delay:0s"></i><i style="animation-delay:.15s"></i><i style="animation-delay:.3s"></i><i style="animation-delay:.1s"></i><i style="animation-delay:.05s"></i></div>
+      </div>
+      <div class="band violet" data-mhz="101.3" data-c="--violet" data-name="情感治愈">
+        <div class="fq">101.3</div>
+        <div class="txt"><b>情感治愈</b><small>晚安信 · 白噪音 · 慢慢睡</small></div>
+        <div class="mini"><i style="animation-delay:.1s"></i><i style="animation-delay:.25s"></i><i style="animation-delay:.05s"></i><i style="animation-delay:.2s"></i><i style="animation-delay:.3s"></i><i style="animation-delay:.12s"></i></div>
+      </div>
+      <div class="band green" data-mhz="106.7" data-c="--green" data-name="都市怪谈">
+        <div class="fq">106.7</div>
+        <div class="txt"><b>都市怪谈</b><small>第十三层 · 午夜便利店</small></div>
+        <div class="mini"><i style="animation-delay:.3s"></i><i style="animation-delay:.1s"></i><i style="animation-delay:.2s"></i><i style="animation-delay:0s"></i><i style="animation-delay:.15s"></i><i style="animation-delay:.28s"></i></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>© MIDNIGHT FM · 设计稿 V2 信号塔 · 声音正在发射</footer>
+
+<script>
+const map={'--red':'#ff2e63','--cyan':'#1fe0ff','--violet':'#b45cff','--green':'#2affab'};
+const label=document.getElementById('towerLabel');
+document.querySelectorAll('.band').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.band').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    const col=map[b.dataset.c];
+    document.documentElement.style.setProperty('--c',col);
+    label.textContent='SIGNAL · '+b.dataset.mhz+' MHz · '+b.dataset.name;
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Reel · Cinematic Noir</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0B0E; --panel:#131318; --ink:#EDE7DA; --dim:#8b8378;
+    --red:#8B1E1E; --gold:#B08D3C; --steel:#3C5A6E; --wine:#5a2340;
+    --serif:"Cormorant Garamond",Georgia,serif; --title:"Cinzel",serif; --sans:"Josefin Sans",sans-serif;
+    --spot:var(--gold);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);overflow-x:hidden;min-height:100vh;transition:background .8s}
+  /* spotlight follows active genre color */
+  .spotlight{position:fixed;inset:0;z-index:0;pointer-events:none;transition:background .8s;
+    background:radial-gradient(60% 55% at 50% 30%,color-mix(in srgb,var(--spot) 22%,transparent),transparent 60%)}
+  .vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:radial-gradient(120% 90% at 50% 40%,transparent 42%,rgba(0,0,0,.85) 100%)}
+  .grain{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.07;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation:flick .3s steps(2) infinite}
+  @keyframes flick{50%{opacity:.045}}
+  .wrap{position:relative;z-index:3;min-height:100vh;display:flex;flex-direction:column}
+
+  header{display:flex;justify-content:space-between;align-items:center;padding:26px 52px}
+  .brand{font-family:var(--title);font-size:22px;letter-spacing:6px;font-weight:600;
+    display:flex;align-items:center;gap:14px}
+  .brand .reel{width:26px;height:26px;border-radius:50%;border:2px solid var(--gold);position:relative;animation:spin 6s linear infinite}
+  .brand .reel::before,.brand .reel::after{content:"";position:absolute;width:5px;height:5px;border-radius:50%;background:var(--gold);top:3px;left:9px}
+  .brand .reel::after{top:auto;bottom:3px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  nav{display:flex;gap:32px;align-items:center;font-size:13px;letter-spacing:2px;text-transform:uppercase}
+  nav a{color:var(--dim);text-decoration:none;transition:.3s}
+  nav a:hover{color:var(--ink);letter-spacing:3px}
+  .lang{display:flex;gap:4px}
+  .lang button{background:none;border:1px solid #2c2c33;color:var(--dim);padding:5px 12px;font-size:12px;letter-spacing:1px;cursor:pointer;font-family:inherit;transition:.3s}
+  .lang button.on{background:var(--gold);color:var(--bg);border-color:var(--gold)}
+
+  .center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px}
+  .center .marquee{font-family:var(--sans);letter-spacing:8px;font-size:12px;text-transform:uppercase;color:var(--gold);
+    border-top:1px solid #2a2a30;border-bottom:1px solid #2a2a30;padding:10px 26px;margin-bottom:26px}
+  .center h1{font-family:var(--title);font-size:60px;letter-spacing:4px;line-height:1.15;font-weight:700;
+    text-shadow:0 4px 40px rgba(0,0,0,.8)}
+  .center h1 span{color:var(--spot);transition:color .8s}
+  .center .tag{font-family:var(--serif);font-style:italic;font-size:22px;color:var(--dim);margin-top:20px;letter-spacing:1px}
+
+  .genres{display:flex;gap:0;margin-top:52px;border:1px solid #24242b;border-radius:4px;overflow:hidden;
+    max-width:1000px;width:calc(100% - 80px)}
+  .g{flex:1;padding:26px 18px;cursor:pointer;position:relative;transition:.45s;border-right:1px solid #202027;
+    background:linear-gradient(180deg,rgba(255,255,255,.015),transparent)}
+  .g:last-child{border-right:none}
+  .g::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--gc);transform:scaleX(0);transition:.45s;transform-origin:center}
+  .g:hover,.g.on{background:color-mix(in srgb,var(--gc) 14%,transparent)}
+  .g:hover::after,.g.on::after{transform:scaleX(1)}
+  .g .no{font-family:var(--serif);font-size:13px;color:var(--gc);letter-spacing:2px}
+  .g h3{font-family:var(--title);font-size:18px;letter-spacing:2px;margin:10px 0 8px;font-weight:600}
+  .g p{font-family:var(--serif);font-size:15px;color:var(--dim);line-height:1.5;font-style:italic}
+  .g.red{--gc:#c0392b}.g.gold{--gc:var(--gold)}.g.steel{--gc:#5a86a4}.g.wine{--gc:#a34a7d}.g.ash{--gc:#9aa0a6}
+
+  footer{text-align:center;padding:22px;color:#4a4a52;font-size:12px;letter-spacing:4px;font-family:var(--sans);text-transform:uppercase}
+  @media(max-width:820px){.center h1{font-size:36px}.genres{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="spotlight" id="spot"></div>
+<div class="vignette"></div>
+<div class="grain"></div>
+
+<div class="wrap">
+<header>
+  <div class="brand"><span class="reel"></span><span data-i18n="brand">THE REEL</span></div>
+  <nav>
+    <a href="#" data-i18n="nav1">Now Showing</a>
+    <a href="#" data-i18n="nav2">Archive</a>
+    <a href="#" data-i18n="nav3">Directors</a>
+    <span class="lang"><button data-lang="en" class="on">EN</button><button data-lang="zh">中文</button></span>
+  </nav>
+</header>
+
+<div class="center">
+  <div class="marquee" data-i18n="marquee">Tonight's Feature Presentation</div>
+  <h1 data-i18n="title">Step into the <span>dark</span>,<br>the story begins</h1>
+  <div class="tag" data-i18n="tag">Every genre, lit by its own light.</div>
+
+  <div class="genres" id="genres">
+    <div class="g red on"><div class="no">No. 01</div><h3 data-k="n"></h3><p data-k="d"></p></div>
+    <div class="g gold"><div class="no">No. 02</div><h3 data-k="n"></h3><p data-k="d"></p></div>
+    <div class="g steel"><div class="no">No. 03</div><h3 data-k="n"></h3><p data-k="d"></p></div>
+    <div class="g wine"><div class="no">No. 04</div><h3 data-k="n"></h3><p data-k="d"></p></div>
+    <div class="g ash"><div class="no">No. 05</div><h3 data-k="n"></h3><p data-k="d"></p></div>
+  </div>
+</div>
+
+<footer data-i18n="footer">THE REEL · SCREENING NIGHTLY</footer>
+</div>
+
+<script>
+const COLORS=['#c0392b','#B08D3C','#5a86a4','#a34a7d','#9aa0a6'];
+const I18N={
+  en:{brand:"THE REEL",nav1:"Now Showing",nav2:"Archive",nav3:"Directors",
+    marquee:"Tonight's Feature Presentation",
+    title:"Step into the <span>dark</span>,<br>the story begins",
+    tag:"Every genre, lit by its own light.",
+    footer:"THE REEL · SCREENING NIGHTLY",
+    genres:[
+      {n:"NOIR MYSTERY",d:"A detective, a secret, rain on the glass."},
+      {n:"THRILLER",d:"The clock is running. So is the killer."},
+      {n:"SCI-FI",d:"Cold stars and the machines that remember us."},
+      {n:"DARK ROMANCE",d:"Love that burns a little too close to the flame."},
+      {n:"HORROR",d:"What waits at the end of the hallway."}
+    ]},
+  zh:{brand:"胶片剧院",nav1:"正在放映",nav2:"片库",nav3:"导演",
+    marquee:"今夜首映",
+    title:"走进<span>黑暗</span>，<br>故事开场",
+    tag:"每一种题材，都有属于它的那束光。",
+    footer:"胶片剧院 · 每夜放映",
+    genres:[
+      {n:"黑色悬疑",d:"一个侦探，一个秘密，玻璃上的雨。"},
+      {n:"惊悚",d:"时钟在走，凶手也在走。"},
+      {n:"科幻",d:"冰冷的星辰，和记得我们的机器。"},
+      {n:"暗黑浪漫",d:"离火焰太近的那种爱。"},
+      {n:"恐怖",d:"走廊尽头，等着的东西。"}
+    ]}
+};
+let LANG="en";
+const gs=[...document.querySelectorAll('.g')];
+const spot=document.getElementById('spot');
+function setSpot(c){document.documentElement.style.setProperty('--spot',c)}
+function applyLang(l){
+  LANG=l;const t=I18N[l];
+  document.documentElement.lang=l==="zh"?"zh":"en";
+  document.querySelectorAll('[data-i18n]').forEach(e=>{if(t[e.dataset.i18n]!=null)e.innerHTML=t[e.dataset.i18n]});
+  gs.forEach((g,i)=>{g.querySelector('[data-k="n"]').textContent=t.genres[i].n;g.querySelector('[data-k="d"]').textContent=t.genres[i].d});
+  document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.lang===l));
+}
+document.querySelectorAll('.lang button').forEach(b=>b.addEventListener('click',()=>applyLang(b.dataset.lang)));
+gs.forEach((g,i)=>{
+  g.addEventListener('mouseenter',()=>setSpot(COLORS[i]));
+  g.addEventListener('click',()=>{gs.forEach(x=>x.classList.remove('on'));g.classList.add('on');setSpot(COLORS[i])});
+});
+setSpot(COLORS[0]);
+applyLang("en");
+</script>
+</body>
+</html>

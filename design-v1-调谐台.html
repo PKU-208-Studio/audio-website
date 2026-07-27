@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Midnight FM · V1 Tuner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Limelight&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,500;1,700&family=Josefin+Sans:wght@300;400;600&family=Cutive+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#05060d; --bg2:#0a0c1a;
+    --ink:#e8ecff; --dim:#7b83a8;
+    --red:#ff3b6b; --cyan:#22e3ff; --violet:#c06bff; --green:#3bffa0;
+    --serif:"Playfair Display",Georgia,"Songti SC","PingFang SC",serif;
+    --deco:"Limelight","Playfair Display","PingFang SC",serif;
+    --geo:"Josefin Sans","PingFang SC","Microsoft YaHei",sans-serif;
+    --mono:"Cutive Mono","Courier New",monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    font-family:var(--geo),-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:radial-gradient(120% 90% at 50% -10%,#111536 0%,var(--bg2) 40%,var(--bg) 100%);
+    color:var(--ink);overflow-x:hidden;min-height:100vh;
+  }
+  .grain{position:fixed;inset:0;pointer-events:none;opacity:.05;z-index:99;
+    background-image:radial-gradient(#fff 1px,transparent 1px);background-size:3px 3px;}
+  header{display:flex;justify-content:space-between;align-items:center;
+    padding:26px 40px;position:relative;z-index:5;}
+  .brand{display:flex;align-items:center;gap:14px;}
+  .logo{width:42px;height:42px;border-radius:50%;position:relative;
+    background:conic-gradient(from 0deg,var(--red),var(--violet),var(--cyan),var(--green),var(--red));
+    animation:spin 8s linear infinite;}
+  .logo::after{content:"";position:absolute;inset:6px;border-radius:50%;background:var(--bg);}
+  .logo::before{content:"";position:absolute;inset:16px;border-radius:50%;background:var(--ink);z-index:2;box-shadow:0 0 14px #fff;}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .brand h1{font-family:var(--deco);font-size:21px;letter-spacing:4px;font-weight:400}
+  .brand span{display:block;font-family:var(--geo);font-size:11px;color:var(--dim);letter-spacing:5px;margin-top:3px}
+  .navwrap{display:flex;align-items:center;gap:26px}
+  nav{display:flex;gap:30px;font-size:13px;color:var(--dim);letter-spacing:1px}
+  nav a{color:var(--dim);text-decoration:none;transition:.3s}
+  nav a:hover{color:var(--ink);text-shadow:0 0 10px var(--cyan)}
+  .right-tools{display:flex;align-items:center;gap:20px}
+  .live{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--red);letter-spacing:2px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 10px var(--red);animation:pulse 1.4s infinite}
+  @keyframes pulse{50%{opacity:.3}}
+  .lang{display:flex;border:1px solid #262c4d;border-radius:30px;overflow:hidden;font-size:12px;letter-spacing:1px}
+  .lang button{background:none;border:none;color:var(--dim);padding:6px 14px;cursor:pointer;transition:.3s;font-family:inherit}
+  .lang button.on{background:var(--cyan);color:#05060d;font-weight:700}
+  .lang button:not(.on):hover{color:var(--ink)}
+
+  .hero{text-align:center;padding:30px 20px 10px;position:relative;z-index:3}
+  .hero .kicker{font-size:12px;letter-spacing:8px;color:var(--cyan);text-shadow:0 0 14px var(--cyan)}
+  .hero h2{font-family:var(--serif);font-style:italic;font-size:56px;letter-spacing:2px;margin:16px 0 10px;font-weight:800;
+    background:linear-gradient(90deg,var(--red),var(--violet),var(--cyan),var(--green));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    background-size:300% 100%;animation:flow 6s linear infinite}
+  @keyframes flow{to{background-position:300% 0}}
+  .hero p{color:var(--dim);font-size:14px;letter-spacing:3px}
+
+  .console{max-width:1100px;margin:24px auto;padding:0 30px;position:relative;z-index:3}
+  .radio{background:linear-gradient(180deg,#0e1122,#080a15);
+    border:1px solid #1c2140;border-radius:22px;padding:26px 30px 20px;
+    box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.05)}
+  .freqbar{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;color:#3a4066;
+    letter-spacing:1px;padding:0 4px 8px;border-bottom:1px solid #191d38;margin-bottom:6px}
+  .wave-wrap{position:relative;height:150px;border-radius:12px;overflow:hidden;
+    background:repeating-linear-gradient(90deg,#0a0c1a 0 1px,transparent 1px 44px)}
+  canvas{position:absolute;inset:0;width:100%;height:100%}
+  .needle{position:absolute;top:0;bottom:0;width:2px;left:50%;
+    background:linear-gradient(#fff,transparent);box-shadow:0 0 16px #fff;z-index:4;
+    transition:left .6s cubic-bezier(.5,0,.2,1)}
+  .needle::before{content:"";position:absolute;top:-6px;left:-5px;width:12px;height:12px;
+    border-radius:50%;background:#fff;box-shadow:0 0 16px #fff}
+  .readout{display:flex;justify-content:space-between;align-items:center;margin-top:16px}
+  .readout .now{font-size:13px;color:var(--dim);letter-spacing:1px}
+  .readout .now b{font-family:var(--serif);color:var(--ink);font-size:19px;letter-spacing:1px;display:block;margin-top:4px;font-weight:700}
+  .mhz{font-family:var(--mono);font-size:30px;letter-spacing:1px;font-weight:400}
+
+  .channels{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;
+    max-width:1100px;margin:34px auto 60px;padding:0 30px;position:relative;z-index:3}
+  .ch{position:relative;border-radius:16px;padding:22px 20px;cursor:pointer;
+    background:linear-gradient(180deg,#0d1020,#090b16);border:1px solid #1a1f3d;
+    transition:.35s;overflow:hidden}
+  .ch::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--c)}
+  .ch::after{content:"";position:absolute;inset:0;opacity:0;transition:.35s;
+    background:radial-gradient(80% 60% at 50% 0%,var(--c),transparent 70%)}
+  .ch:hover{transform:translateY(-6px);border-color:var(--c)}
+  .ch:hover::after{opacity:.22}
+  .ch .fq{font-family:var(--mono);font-size:12px;color:var(--c);letter-spacing:2px}
+  .ch h3{font-family:var(--serif);font-size:22px;margin:10px 0 6px;letter-spacing:1px;font-weight:700}
+  .ch p{font-size:12px;color:var(--dim);line-height:1.6;letter-spacing:1px}
+  .bars{display:flex;gap:3px;align-items:flex-end;height:26px;margin-top:14px}
+  .bars i{flex:1;background:var(--c);border-radius:2px;opacity:.85;
+    animation:eq 1.1s ease-in-out infinite;box-shadow:0 0 8px var(--c)}
+  @keyframes eq{0%,100%{height:20%}50%{height:100%}}
+  .ch.red{--c:var(--red)} .ch.cyan{--c:var(--cyan)}
+  .ch.violet{--c:var(--violet)} .ch.green{--c:var(--green)}
+
+  footer{text-align:center;padding:24px;color:#333a5c;font-size:11px;letter-spacing:3px}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<header>
+  <div class="brand">
+    <div class="logo"></div>
+    <div><h1 data-i18n="brand">MIDNIGHT FM</h1><span data-i18n="brandSub">DEEP NIGHT RADIO</span></div>
+  </div>
+  <div class="right-tools">
+    <nav>
+      <a href="#" data-i18n="navLive">On Air</a><a href="#" data-i18n="navCh">Channels</a><a href="#" data-i18n="navLib">Library</a><a href="#" data-i18n="navHost">Hosts</a>
+    </nav>
+    <div class="live"><span class="dot"></span><span data-i18n="onair">ON AIR · 03:47</span></div>
+    <div class="lang">
+      <button data-lang="en" class="on">EN</button>
+      <button data-lang="zh">中文</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="kicker" data-i18n="kicker">FOR THOSE STILL AWAKE</div>
+  <h2 data-i18n="title">Tune In to the Night</h2>
+  <p data-i18n="subtitle">Every color is a frequency of a different story</p>
+</section>
+
+<section class="console">
+  <div class="radio">
+    <div class="freqbar">
+      <span>88.0</span><span>91.5</span><span>95.0</span><span>98.5</span><span>102.0</span><span>105.5</span><span>108.0</span>
+    </div>
+    <div class="wave-wrap">
+      <canvas id="wave"></canvas>
+      <div class="needle" id="needle" style="left:50%"></div>
+    </div>
+    <div class="readout">
+      <div class="now"><span data-i18n="nowPlaying">Now Playing</span><b id="chName">Sci-Fi · Echoes from the Stars</b></div>
+      <div class="mhz" id="mhz" style="color:var(--cyan)">95.0<span style="font-size:14px"> MHz</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="channels" id="channels">
+  <div class="ch red" data-f="12" data-mhz="89.4" data-c="--red">
+    <div class="fq">FM 89.4</div><h3 data-k="name"></h3>
+    <p data-k="desc"></p>
+    <div class="bars"><i style="animation-delay:0s"></i><i style="animation-delay:.1s"></i><i style="animation-delay:.2s"></i><i style="animation-delay:.15s"></i><i style="animation-delay:.05s"></i><i style="animation-delay:.25s"></i><i style="animation-delay:.12s"></i></div>
+  </div>
+  <div class="ch cyan" data-f="50" data-mhz="95.0" data-c="--cyan">
+    <div class="fq">FM 95.0</div><h3 data-k="name"></h3>
+    <p data-k="desc"></p>
+    <div class="bars"><i style="animation-delay:.2s"></i><i style="animation-delay:0s"></i><i style="animation-delay:.15s"></i><i style="animation-delay:.3s"></i><i style="animation-delay:.1s"></i><i style="animation-delay:.05s"></i><i style="animation-delay:.22s"></i></div>
+  </div>
+  <div class="ch violet" data-f="72" data-mhz="101.3" data-c="--violet">
+    <div class="fq">FM 101.3</div><h3 data-k="name"></h3>
+    <p data-k="desc"></p>
+    <div class="bars"><i style="animation-delay:.1s"></i><i style="animation-delay:.25s"></i><i style="animation-delay:.05s"></i><i style="animation-delay:.2s"></i><i style="animation-delay:.3s"></i><i style="animation-delay:.12s"></i><i style="animation-delay:.18s"></i></div>
+  </div>
+  <div class="ch green" data-f="90" data-mhz="106.7" data-c="--green">
+    <div class="fq">FM 106.7</div><h3 data-k="name"></h3>
+    <p data-k="desc"></p>
+    <div class="bars"><i style="animation-delay:.3s"></i><i style="animation-delay:.1s"></i><i style="animation-delay:.2s"></i><i style="animation-delay:0s"></i><i style="animation-delay:.15s"></i><i style="animation-delay:.28s"></i><i style="animation-delay:.08s"></i></div>
+  </div>
+</section>
+
+<footer data-i18n="footer">© MIDNIGHT FM · Design V1 Tuner · Broadcasting only after dark</footer>
+
+<script>
+/* ---------- i18n ---------- */
+const I18N={
+  en:{
+    brand:"MIDNIGHT FM", brandSub:"DEEP NIGHT RADIO",
+    navLive:"On Air", navCh:"Channels", navLib:"Library", navHost:"Hosts",
+    onair:"ON AIR · 03:47",
+    kicker:"FOR THOSE STILL AWAKE",
+    title:"Tune In to the Night",
+    subtitle:"Every color is a frequency of a different story",
+    nowPlaying:"Now Playing",
+    footer:"© MIDNIGHT FM · Design V1 Tuner · Broadcasting only after dark",
+    channels:[
+      {name:"Mystery & Thriller", desc:"Sleepless detectives, locked rooms, a phone call at 3 a.m."},
+      {name:"Sci-Fi & Cosmos", desc:"Sleeping ships, glitching AIs, a signal from the edge of space."},
+      {name:"Healing & Comfort", desc:"Letters to the lonely, a cup of warm milk, drifting off to sleep."},
+      {name:"Urban Legends", desc:"The 13th floor, the midnight convenience store, the street you can't return to."}
+    ]
+  },
+  zh:{
+    brand:"午 夜 电 台", brandSub:"MIDNIGHT FM",
+    navLive:"正在直播", navCh:"频道", navLib:"故事库", navHost:"主播",
+    onair:"ON AIR · 03:47",
+    kicker:"深 夜 · 只 为 醒 着 的 人",
+    title:"拨动频率，聆听黑夜",
+    subtitle:"每一种颜色，都是一种故事的频率",
+    nowPlaying:"当前频道",
+    footer:"© MIDNIGHT FM · 设计稿 V1 调谐台 · 只在深夜播出",
+    channels:[
+      {name:"悬疑惊悚", desc:"失眠的侦探，无解的密室，凌晨三点的一通电话。"},
+      {name:"科幻宇宙", desc:"沉睡的飞船，故障的AI，宇宙尽头传来的信号。"},
+      {name:"情感治愈", desc:"写给孤独的信，一杯温热的牛奶，慢慢睡去。"},
+      {name:"都市怪谈", desc:"电梯里的第十三层，午夜便利店，回不去的那条街。"}
+    ]
+  }
+};
+let LANG="en";
+const chCards=[...document.querySelectorAll('.ch')];
+let activeIndex=1; // default Sci-Fi
+
+function applyLang(lang){
+  LANG=lang;
+  const t=I18N[lang];
+  document.documentElement.lang = lang==="zh"?"zh":"en";
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.dataset.i18n; if(t[k]!=null) el.textContent=t[k];
+  });
+  chCards.forEach((el,i)=>{
+    el.querySelector('[data-k="name"]').textContent=t.channels[i].name;
+    el.querySelector('[data-k="desc"]').textContent=t.channels[i].desc;
+  });
+  // refresh now-playing name
+  chName.textContent=t.channels[activeIndex].name+" · "+(lang==="zh"?"":"")+t.channels[activeIndex].name;
+  chName.textContent = t.channels[activeIndex].name;
+  document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
+}
+document.querySelectorAll('.lang button').forEach(b=>{
+  b.addEventListener('click',()=>applyLang(b.dataset.lang));
+});
+
+/* ---------- waveform ---------- */
+const cv=document.getElementById('wave'),ctx=cv.getContext('2d');
+let W,H,dpr=window.devicePixelRatio||1;
+function resize(){W=cv.clientWidth;H=cv.clientHeight;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}
+resize();window.addEventListener('resize',resize);
+let t=0, active={pos:.5};
+const COLORS=['#ff3b6b','#22e3ff','#c06bff','#3bffa0'];
+let activeLayer=1;
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  const cx=W*active.pos;
+  for(let layer=0;layer<COLORS.length;layer++){
+    ctx.beginPath();
+    for(let x=0;x<=W;x+=2){
+      const d=Math.abs(x-cx)/W;
+      const env=Math.exp(-d*d*8);
+      const amp=(6+layer*4)+ env*(38-layer*6);
+      const y=H/2 + Math.sin(x*0.03 + t*(1+layer*.4) + layer)*amp*(1-d*0.3)
+              + Math.sin(x*0.11 - t*2)*env*8;
+      x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.strokeStyle=COLORS[layer];
+    ctx.globalAlpha=layer===activeLayer?0.9:0.18;
+    ctx.lineWidth=layer===activeLayer?2.2:1;
+    ctx.shadowBlur=layer===activeLayer?16:0;ctx.shadowColor=COLORS[layer];
+    ctx.stroke();
+  }
+  ctx.globalAlpha=1;ctx.shadowBlur=0;
+  t+=0.03;requestAnimationFrame(draw);
+}
+draw();
+
+const needle=document.getElementById('needle'),chName=document.getElementById('chName'),
+      mhz=document.getElementById('mhz');
+chCards.forEach((el,i)=>{
+  el.addEventListener('click',()=>{
+    const pos=(+el.dataset.f)/100;
+    active.pos=pos;activeLayer=i;activeIndex=i;
+    needle.style.left=(pos*100)+'%';
+    chName.textContent=I18N[LANG].channels[i].name;
+    const col=getComputedStyle(document.documentElement).getPropertyValue(el.dataset.c);
+    mhz.innerHTML=el.dataset.mhz+'<span style="font-size:14px"> MHz</span>';
+    mhz.style.color=col;
+  });
+});
+
+applyLang("en"); // default English
+</script>
+</body>
+</html>
