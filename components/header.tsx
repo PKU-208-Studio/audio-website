@@ -58,7 +58,7 @@ export function Header() {
             {copy.library}
           </Link>
         </nav>
-        <div className="language-switch" aria-label="Language">
+        {/* <div className="language-switch" aria-label="Language">
           <button
             type="button"
             className={locale === "en" ? "active" : ""}
@@ -75,7 +75,7 @@ export function Header() {
           >
             中文
           </button>
-        </div>
+        </div> */}
       </div>
     </header>
   );
